@@ -8,7 +8,7 @@ public class Main {
     String username = scanner.nextLine();
     StepsTracker tracker = new StepsTracker(username);
     int choice;
-
+//ignat loh
     do {
         System.out.println("What would you like to do? Enter the number corresponding to the menu item.");
         System.out.println("1 - Enter steps for a today");
