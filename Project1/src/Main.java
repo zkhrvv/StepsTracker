@@ -8,7 +8,7 @@ public class Main {
     String username = scanner.nextLine();
     StepsTracker tracker = new StepsTracker(username);
     int choice;
-//ignat loh
+
     do {
         System.out.println("What would you like to do? Enter the number corresponding to the menu item.");
         System.out.println("1 - Enter steps for a today");
@@ -21,12 +21,13 @@ public class Main {
         choice = scanner.nextInt();
         switch (choice) {
             case 1:
-                System.out.println("Enter steps for today:");
-                int steps = scanner.nextInt();
-                LocalDate today = LocalDate.now(); 
-                tracker.insertSteps(today, steps);
-                System.out.println("Steps inserted!");
-                break;
+            System.out.println("Enter steps for today:");
+            int steps = scanner.nextInt();
+            LocalDate today = LocalDate.now(); 
+            tracker.insertSteps(today, steps);
+            tracker.printProgress(steps, username, tracker.getCurrentUserStepsGoal());
+            System.out.println("Steps inserted!");
+            break;
             case 2:
                 System.out.println("Enter the month:");
                 int statMonth = scanner.nextInt();

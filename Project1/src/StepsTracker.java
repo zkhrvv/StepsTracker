@@ -53,19 +53,33 @@ public class StepsTracker {
     }
     
 
-    
+    //asd
 
-   public void insertSteps(LocalDate date, int steps) {
-    try {
-        PreparedStatement stmt = this.conn.prepareStatement("INSERT INTO step_counts (idprofile, date, steps) VALUES (?, ?, ?)");
-        stmt.setInt(1, this.user.getId());
-        stmt.setDate(2, java.sql.Date.valueOf(date));
-        stmt.setInt(3, steps);
-        stmt.executeUpdate();
-    } catch (SQLException e) {
-        e.printStackTrace();
+    public void insertSteps(LocalDate date, int steps) {
+        try {
+            // Check if a row exists for the date
+            PreparedStatement checkStmt = this.conn.prepareStatement("SELECT * FROM step_counts WHERE idprofile = ? AND date = ?");
+            checkStmt.setInt(1, this.user.getId());
+            checkStmt.setDate(2, java.sql.Date.valueOf(date));
+            ResultSet rs = checkStmt.executeQuery();
+    
+            if (rs.next()) { // If a row exists, update it
+                PreparedStatement updateStmt = this.conn.prepareStatement("UPDATE step_counts SET steps = ? WHERE idprofile = ? AND date = ?");
+                updateStmt.setInt(1, steps);
+                updateStmt.setInt(2, this.user.getId());
+                updateStmt.setDate(3, java.sql.Date.valueOf(date));
+                updateStmt.executeUpdate();
+            } else { // Else, insert a new row
+                PreparedStatement insertStmt = this.conn.prepareStatement("INSERT INTO step_counts (idprofile, date, steps) VALUES (?, ?, ?)");
+                insertStmt.setInt(1, this.user.getId());
+                insertStmt.setDate(2, java.sql.Date.valueOf(date));
+                insertStmt.setInt(3, steps);
+                insertStmt.executeUpdate();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
-}
 
 public void printMonthlyStats(int month) {
     try {
@@ -131,16 +145,41 @@ public void printMonthlyStats(int month) {
             if (rs.next()) {
                 stepsGoal = rs.getInt("stepsgoal");
             }
-        } catch (SQLException e) {
+        }
+         catch (SQLException e) {
             e.printStackTrace();
         }
         return stepsGoal;
     }
+
         //Constructor for testing
     public StepsTracker(int profileId, String username, Connection conn) {
         this.user = new User(profileId, username, getStepsGoal(profileId)); 
         this.conn = conn;
+
+        
+    }//getter for getstepsgoal
+    public int getCurrentUserStepsGoal() {
+        return getStepsGoal(this.user.getId());
     }
+
+    public void printProgress(int steps, String username, int stepsGoal) {
+        int progressPercentage = (int) (((double) steps / stepsGoal) * 100);
+        StringBuilder progressBar = new StringBuilder();
+        progressBar.append("[");
+        for (int i = 0; i < 100; i++) {
+            if (i <= progressPercentage) {
+                progressBar.append("#");
+            } else {
+                progressBar.append(" ");
+            }
+        }
+        progressBar.append("]");
+        System.out.println("Progress for " + username + ": " + steps + "/" + stepsGoal + " steps");
+        System.out.println(progressBar.toString());
+    }
+
+
 
     }
     
