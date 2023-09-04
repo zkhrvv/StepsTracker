@@ -19,45 +19,47 @@ public class Main {
         System.out.println("0 - Return to profile selection");
 
         choice = scanner.nextInt();
-        switch (choice) {
-            case 1:
-            System.out.println("Enter steps for today:");
-            int steps = scanner.nextInt();
-            LocalDate today = LocalDate.now(); 
-            tracker.insertSteps(today, steps);
-            tracker.printProgress(steps, username, tracker.getCurrentUserStepsGoal());
-            System.out.println("Steps inserted!");
-            break;
-            case 2:
-                System.out.println("Enter the month:");
-                int statMonth = scanner.nextInt();
-                tracker.printMonthlyStats(statMonth);
-                break;
-            case 3:
-                System.out.println("Enter new daily step goal:");
-                int newGoal = scanner.nextInt();
-                tracker.changeDailyStepGoal(newGoal);
-                break;
-            case 4:
-                tracker.printTotalStats();
-                break;
-            case 5: {
-                System.out.println("Enter date (YYYY-MM-DD):");
-                String dateString = scanner.next();
-            try {
-                LocalDate date = LocalDate.parse(dateString);
-                System.out.println("Enter steps:");
-                steps = scanner.nextInt();
-    
-                tracker.insertSteps(date, steps);
-                System.out.println("Steps inserted for " + dateString + "!");
-}               catch (DateTimeParseException e) {
-                System.out.println("Invalid date format. Please enter the date as 'YYYY-MM-DD'.");
-}
 
+        try {
+            switch (choice) {
+                case 1:
+                    System.out.println("Enter steps for today:");
+                    int steps = scanner.nextInt();
+                    LocalDate today = LocalDate.now();
+                    tracker.insertSteps(today, steps);
+                    tracker.printProgress(steps, username, tracker.getCurrentUserStepsGoal());
+                    System.out.println("Steps inserted!");
+                    break;
+                case 2:
+                    System.out.println("Enter the month:");
+                    int statMonth = scanner.nextInt();
+                    tracker.printMonthlyStats(statMonth);
+                    break;
+                case 3:
+                    System.out.println("Enter new daily step goal:");
+                    int newGoal = scanner.nextInt();
+                    tracker.changeDailyStepGoal(newGoal);
+                    break;
+                case 4:
+                    tracker.printTotalStats();
+                    break;
+                case 5: {
+                    System.out.println("Enter date (YYYY-MM-DD):");
+                    String dateString = scanner.next();
+                    LocalDate date = LocalDate.parse(dateString);
+                    System.out.println("Enter steps:");
+                    steps = scanner.nextInt();
+                    tracker.insertSteps(date, steps);
+                    System.out.println("Steps inserted for " + dateString + "!");
+                    break;
+                }
             }
+        } catch (DateTimeParseException e) {
+            System.out.println("Invalid date format. Please enter the date as 'YYYY-MM-DD'.");
+        } catch (Exception e) {
+            System.out.println("An error occurred: " + e.getMessage());
         }
-    } while (choice != 0);
-}
 
+    } while (choice != 0);
+ }
 }

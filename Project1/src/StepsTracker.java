@@ -81,34 +81,37 @@ public class StepsTracker {
         }
     }
 
-public void printMonthlyStats(int month) {
-    try {
-        
-        PreparedStatement stmt = this.conn.prepareStatement("SELECT SUM(steps) AS totalSteps FROM step_counts WHERE idprofile = ? AND EXTRACT(MONTH FROM date) = ?");
-        stmt.setInt(1, this.user.getId());
-        stmt.setInt(2, month);
-        ResultSet rs = stmt.executeQuery();
-
-        if (rs.next()) {
-            int totalSteps = rs.getInt("totalSteps");
-            System.out.println("Total steps for " + this.user.getUsername() + " in month " + month + " is: " + totalSteps);
+    public void printMonthlyStats(int month) {
+        try {
+            
+            PreparedStatement stmt = this.conn.prepareStatement("SELECT SUM(steps) AS totalSteps FROM step_counts WHERE idprofile = ? AND EXTRACT(MONTH FROM date) = ?");
+            stmt.setInt(1, this.user.getId());
+            stmt.setInt(2, month);
+            ResultSet rs = stmt.executeQuery();
+    
+            if (rs.next()) {
+                int totalSteps = rs.getInt("totalSteps");
+                System.out.println("Total steps for " + this.user.getUsername() + " in month " + month + " is: " + totalSteps);
+                Converter.convert(totalSteps);  
+            }
+    
+            
+            stmt = this.conn.prepareStatement("SELECT date, steps FROM step_counts WHERE idprofile = ? AND EXTRACT(MONTH FROM date) = ? ORDER BY date");
+            stmt.setInt(1, this.user.getId()); 
+            stmt.setInt(2, month); 
+            rs = stmt.executeQuery();
+    
+            while (rs.next()) {
+                java.sql.Date date = rs.getDate("date");
+                int steps = rs.getInt("steps");
+                System.out.println("On " + date + ", steps taken: " + steps);
+                Converter.convert(steps); 
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-
-        
-        stmt = this.conn.prepareStatement("SELECT date, steps FROM step_counts WHERE idprofile = ? AND EXTRACT(MONTH FROM date) = ? ORDER BY date");
-        stmt.setInt(1, this.user.getId()); 
-        stmt.setInt(2, month); 
-        rs = stmt.executeQuery();
-
-        while (rs.next()) {
-            java.sql.Date date = rs.getDate("date");
-            int steps = rs.getInt("steps");
-            System.out.println("On " + date + ", steps taken: " + steps);
-        }
-    } catch (SQLException e) {
-        e.printStackTrace();
     }
-}
+    
     public void changeDailyStepGoal(int newGoal) {
         try {
             PreparedStatement stmt = this.conn.prepareStatement("UPDATE profiles SET stepsgoal = ? WHERE id = ?");
